@@ -1,0 +1,27 @@
+Various infosec tools
+
+Copyright 2011 Olivier Bilodeau <olivier@bottomlesspit.org>
+
+Latest version available at: https://github.com/obilodeau/infosec-tools
+
+The tools
+---------
+
+* Crypt::rotn
+
+  Tired of rewritting the same simple code over and over again to break simple 
+  rot-based substitution ciphers so I decided to create a perl module.
+
+Bug reports / contributions
+---------------------------
+Are more than welcome! Ideally use github but bug reports and patches by email
+will do fine.
+
+Author
+------
+* Olivier Bilodeau <olivier@bottomlesspit.org>
+
+License
+-------
+Otherwise specified otherwise, everything is under the Simplified BSD license.
+See LICENSE for the full text.
