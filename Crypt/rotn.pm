@@ -15,6 +15,7 @@ use base 'Exporter';
 our $VERSION = '0.01';
 our @EXPORT_OK = qw(
     rot_n
+    positional_rot
     rot_all
     @lowercase_latin
     @uppercase_latin
@@ -42,9 +43,7 @@ returns string
 =cut
 
 sub rot_n {
-    my $input = shift;
-    my $degree = shift;
-    my $alphabet = shift;
+    my ($input, $degree, $alphabet) = @_;
 
     # lowercase_latin is default alphabet
     $alphabet = \@lowercase_latin unless defined($alphabet);
@@ -58,7 +57,48 @@ sub rot_n {
         if ($char eq ' ') {
             $result .= ' ';
         } else {
-            my $new_pos = ((find_pos($char, $alphabet) + $degree) % (scalar @{$alphabet}));
+            my $new_pos = ((_find_pos($char, $alphabet) + $degree) % (scalar @{$alphabet}));
+            $result .= $alphabet->[$new_pos];
+        }
+    }
+    return $result;
+}
+
+=item positional_rot ( input, transformation, alphabet )
+
+input string, transformation as a coderef (explained below), alphabet as an arrayref
+
+returns string
+
+positional_rot is a rot_n transformation where the n varies based on the position of the char in the string.
+
+ex: hello with a positional_rot of n = (2i + 5) gives: mluwB
+
+In the transformation coderef you provide the mean to caculate the n based on the string index.
+For example to do n = (2i + 5) a coderef would look like:
+  sub {
+      my $pos = shift;
+      return (2 * $pos + 5);
+  }
+
+=cut
+sub positional_rot {
+    my ($input, $transformation_coderef, $alphabet) = @_;
+
+    # lowercase_latin is default alphabet
+    $alphabet = \@lowercase_latin unless defined($alphabet);
+
+    # covert input string into input arrayref
+    my @input = split('', $input);
+    $input = \@input;
+
+    my $result;
+    for (my $i = 0; $i < @{$input}; $i++) {
+        my $char = ${$input}[$i];
+        if ($char eq ' ') {
+            $result .= ' ';
+        } else {
+            my $new_pos = ((_find_pos($char, $alphabet) + &$transformation_coderef($i)) % (scalar @{$alphabet}));
             $result .= $alphabet->[$new_pos];
         }
     }
@@ -87,7 +127,7 @@ sub rot_all {
     return @return;
 }
 
-sub find_pos {
+sub _find_pos {
     my $needle = shift;
     my $haystack = shift;
     my $i;
